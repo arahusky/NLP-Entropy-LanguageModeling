@@ -82,7 +82,10 @@ public class ProbabilityContainer {
      */
     public double getBigramConditionalProbability(String y, String x) {
         //P(y | x) = P(x,y) / P(x)
-
+        if (getUnigramProbability(x) == 0) {
+            return 0;
+        }
+        
         return getBigramProbability(x, y) / getUnigramProbability(x);
     }
 
@@ -90,16 +93,32 @@ public class ProbabilityContainer {
      * Returns disjoint probability P(x,y,z).
      */
     public double getTrigramProbability(String x, String y, String z) {
-        return 0;
+        Triplet triplet = new Triplet(x, y, z);
+        int tripletCount = tripletCounts.getOrDefault(triplet, 0);
+
+        return tripletCount / numberOfWords;
     }
 
     /**
      * Return conditional probability P(z|x,y).
      */
     public double getTrigramConditionalProbability(String z, String x, String y) {
-        return 0;
+        //P(z|x,y) = P(x,y,z) / P(x,y)
+        if (getBigramProbability(x,y) == 0) {
+            return 0;
+        }
+        
+        return getTrigramProbability(x, y, z) / getBigramProbability(x,y);
     }
 
+    /**
+     * Returns number of all words (=pairs, =triplets) in the text.
+     */
+    public double getNumberOfWords() {
+        return numberOfWords;
+    }
+
+    
     /**
      * Returns all words used in the text.
      */
@@ -124,6 +143,12 @@ public class ProbabilityContainer {
             second = "<s>";
             third = "<s>";
         }
+
+        public Triplet(String first, String second, String third) {
+            this.first = first;
+            this.second = second;
+            this.third = third;
+        }               
 
         void push(String word) {
             first = second;
@@ -161,42 +186,5 @@ public class ProbabilityContainer {
             return true;
         }
 
-    }
-
-    public class Pair {
-
-        public final String first;
-        public final String second;
-
-        public Pair(String first, String second) {
-            this.first = first;
-            this.second = second;
-        }
-
-        @Override
-        public int hashCode() {
-            int hash = 7;
-            hash = 79 * hash + Objects.hashCode(this.first);
-            hash = 79 * hash + Objects.hashCode(this.second);
-            return hash;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == null) {
-                return false;
-            }
-            if (getClass() != obj.getClass()) {
-                return false;
-            }
-            final Pair other = (Pair) obj;
-            if (!Objects.equals(this.first, other.first)) {
-                return false;
-            }
-            if (!Objects.equals(this.second, other.second)) {
-                return false;
-            }
-            return true;
-        }
     }
 }

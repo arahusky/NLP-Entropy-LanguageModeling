@@ -24,6 +24,20 @@ public class Text {
 
     private static Random random = new Random(666);
 
+    public Text(List<String> words) {
+        this.words = words;
+        distinctCharacters = new TreeSet<>();
+        distinctWords = new TreeSet<>();
+        
+        for (String word : words) {
+            distinctWords.add(word);
+            
+            for (int i = 0; i < word.length(); i++) {
+                distinctCharacters.add(word.charAt(i));
+            }
+        }            
+    }
+    
     public Text(List<String> words, SortedSet<Character> distinctCharacters, SortedSet<String> distinctWords) {
         this.words = words;
         this.distinctCharacters = distinctCharacters;
@@ -55,6 +69,11 @@ public class Text {
         return words.size();
     }
 
+    public List<String> getWords() {
+        return words;
+    }
+
+    
     /**
      * Mess up given text.
      *

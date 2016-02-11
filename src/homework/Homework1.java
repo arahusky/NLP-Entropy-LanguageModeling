@@ -88,8 +88,8 @@ public class Homework1 {
         EntropyCounter entropyCounter = new EntropyCounter(probs);
 
         double entropy = 0;
-        Set<ProbabilityContainer.Pair> pairs = probs.getDistinctPairs();
-        for (ProbabilityContainer.Pair pair : pairs) {
+        Set<Pair> pairs = probs.getDistinctPairs();
+        for (Pair pair : pairs) {
             entropy += entropyCounter.getConditionalEntropy(pair.second, pair.first);
         }
 
