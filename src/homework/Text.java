@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.SortedSet;
@@ -28,16 +29,16 @@ public class Text {
         this.words = words;
         distinctCharacters = new TreeSet<>();
         distinctWords = new TreeSet<>();
-        
+
         for (String word : words) {
             distinctWords.add(word);
-            
+
             for (int i = 0; i < word.length(); i++) {
                 distinctCharacters.add(word.charAt(i));
             }
-        }            
+        }
     }
-    
+
     public Text(List<String> words, SortedSet<Character> distinctCharacters, SortedSet<String> distinctWords) {
         this.words = words;
         this.distinctCharacters = distinctCharacters;
@@ -49,7 +50,7 @@ public class Text {
         distinctCharacters = new TreeSet<>();
         distinctWords = new TreeSet<>();
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(input, "ISO8859_2"));
         String line;
         while (((line = reader.readLine()) != null)) {
             words.add(line);
@@ -73,7 +74,6 @@ public class Text {
         return words;
     }
 
-    
     /**
      * Mess up given text.
      *
@@ -105,6 +105,10 @@ public class Text {
         }
     }
 
+    public TextStatistics getTextStatistics() {
+        return new TextStatistics();
+    }
+
     @Override
     public Text clone() {
 
@@ -112,5 +116,68 @@ public class Text {
         List<String> newWords = (ArrayList<String>) ((ArrayList<String>) words).clone();
 
         return new Text(newWords, distinctCharacters, distinctWords);
+    }
+
+    /**
+     * This class provides basic statistics (characteristics) of the text.
+     *
+     * The purpose of this class for the homework was to have better insight
+     * into difference of the Czech and the English text (mostly its entropies).
+     */
+    public class TextStatistics {
+
+        private int wordCount;
+        private int totalCharacters;
+
+        //map storing for each word its number of occurrences
+        private HashMap<String, Integer> wordFrequency;
+
+        public TextStatistics() {
+            computeCharacteristics();
+        }
+
+        private void computeCharacteristics() {
+            wordCount = words.size();
+            wordFrequency = new HashMap<>();
+
+            for (String word : words) {
+                totalCharacters += word.length();
+
+                int wcount = 0;
+                if (wordFrequency.containsKey(word)) {
+                    wcount = wordFrequency.get(word);
+                }
+
+                wordFrequency.put(word, wcount + 1);
+            }
+        }
+
+        public int getWordCount() {
+            return wordCount;
+        }
+
+        public int getTotalCharacters() {
+            return totalCharacters;
+        }
+
+        public double getAvgCharacterPerWord() {
+            return ((double) totalCharacters) / wordCount;
+        }
+
+        public int getNumUniqueWords() {
+            return wordFrequency.size();
+        }
+
+        /**
+         * Returns number of words with given occurrence.
+         */
+        public int getNumWordsWithGivenFrequency(int numberOfOccurrences) {            
+            int num = 0;            
+            for (int i : wordFrequency.values()) {
+                if (i == numberOfOccurrences) num++;
+            }
+            
+            return num;
+        }
     }
 }

@@ -3,7 +3,8 @@ package homework;
 import java.util.Objects;
 
 /**
- *
+ * This class is just tuple implementation.
+ * 
  * @author Jakub Naplava
  */
 public class Pair {

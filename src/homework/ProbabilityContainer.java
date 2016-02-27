@@ -35,12 +35,13 @@ public class ProbabilityContainer {
         Triplet window = new Triplet();
         for (int i = 0; i < text.getLength(); i++) {
             window.push(text.get(i));
+            window = new Triplet(window.first, window.second, window.third);
 
             int count = 0;
             if (tripletCounts.containsKey(window)) {
                 count = tripletCounts.get(window);
             }
-            tripletCounts.put(window, count + 1);
+            tripletCounts.put(new Triplet(window.first, window.second, window.third), count + 1);
 
             Pair pair = new Pair(window.second, window.third);
             count = 0;
@@ -82,6 +83,13 @@ public class ProbabilityContainer {
      */
     public double getBigramConditionalProbability(String y, String x) {
         //P(y | x) = P(x,y) / P(x)
+        Pair pair = new Pair(x, y);
+        if (pairCounts.getOrDefault(pair, 0) == 0) {
+             if (wordCounts.getOrDefault(x, 0) == 0) {
+                 return 1.0 / getDistinctWords().size();
+             }
+        }        
+        
         if (getUnigramProbability(x) == 0) {
             return 0;
         }
@@ -94,8 +102,8 @@ public class ProbabilityContainer {
      */
     public double getTrigramProbability(String x, String y, String z) {
         Triplet triplet = new Triplet(x, y, z);
-        int tripletCount = tripletCounts.getOrDefault(triplet, 0);
-
+        int tripletCount = tripletCounts.getOrDefault(triplet,0);
+        
         return tripletCount / numberOfWords;
     }
 
@@ -104,6 +112,14 @@ public class ProbabilityContainer {
      */
     public double getTrigramConditionalProbability(String z, String x, String y) {
         //P(z|x,y) = P(x,y,z) / P(x,y)
+        Triplet triplet = new Triplet(x, y, z);
+        if (tripletCounts.getOrDefault(triplet,0) == 0) {
+            Pair pair = new Pair(x, y);
+            if (pairCounts.getOrDefault(pair, 0) == 0) {
+                return 1.0 / getDistinctWords().size();
+            }
+        }
+        
         if (getBigramProbability(x,y) == 0) {
             return 0;
         }
@@ -174,17 +190,21 @@ public class ProbabilityContainer {
                 return false;
             }
             final Triplet other = (Triplet) obj;
-            if (!Objects.equals(this.first, other.first)) {
+            if (!this.first.equals(other.first)) {
                 return false;
             }
-            if (!Objects.equals(this.second, other.second)) {
+            if (!this.second.equals(other.second)) {
                 return false;
             }
-            if (!Objects.equals(this.third, other.third)) {
+            if (!this.third.equals(other.third)) {
                 return false;
             }
             return true;
         }
-
+        
+        @Override
+        public String toString() {
+            return first + " " + second + " " + third;
+        }
     }
 }

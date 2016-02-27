@@ -25,7 +25,7 @@ public class EntropyCounter {
         return (-1) * probs.getBigramProbability(x, y) * log2(probs.getBigramConditionalProbability(y, x));
     }
 
-    private double log2(double num) {
+    public static double log2(double num) {
         return Math.log(num) / Math.log(2);
     }
 }

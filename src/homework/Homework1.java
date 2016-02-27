@@ -27,15 +27,20 @@ public class Homework1 {
         PrintWriter writer = new PrintWriter(new File("results1.html"));
         writer.println("<h1> Homework NLP </h1> ");
 
-        measureEntropyAndMessUp(englishText, writer, "English");
+        //measureEntropyAndMessUp(englishText, writer, "English");
         measureEntropyAndMessUp(czechText, writer, "Czech");
 
+        /*printTextStatistics(englishText);
+         printTextStatistics(czechText);*/
         writer.close();
     }
 
+    /**
+     * Measures entropy of given text, messes it up and measures entropy again.
+     * The results are printed as html file using given writer.
+     */
     private static void measureEntropyAndMessUp(String fileName, PrintWriter writer, String textLanguage) throws IOException, CloneNotSupportedException {
-
-        //TODO maybe set ISO8859_2
+        //parse text and count its entropy
         Text text = new Text(new FileInputStream(fileName));
         double entropy = countEntropy(text);
 
@@ -83,7 +88,7 @@ public class Homework1 {
     /**
      * Counts entropy of given text.
      */
-    private static double countEntropy(Text text) {
+    public static double countEntropy(Text text) {
         ProbabilityContainer probs = new ProbabilityContainer(text);
         EntropyCounter entropyCounter = new EntropyCounter(probs);
 
@@ -97,7 +102,8 @@ public class Homework1 {
     }
 
     /**
-     * Prints statistics about each 'messuped' measurement. 
+     * Prints statistics (i.e. min, max and avg. entropy) about each 'messuped'
+     * measurement.
      */
     private static void printStats(PrintWriter writer, double messupProb, List<Double> entropyValues) {
         writer.println("<tr>");
@@ -124,5 +130,25 @@ public class Homework1 {
         writer.println("<td>" + max + "</td>");
 
         writer.println("</tr>");
+    }
+
+    /**
+     * Prints statistics of given text. This method is used to have better
+     * insight into the difference of the Czech and the English text.
+     */
+    private static void printTextStatistics(String fileName) throws IOException {
+        Text text = new Text(new FileInputStream(fileName));
+
+        Text.TextStatistics stats = text.getTextStatistics();
+
+        System.out.println("Stats for " + fileName);
+        System.out.println("Number of words " + stats.getWordCount());
+        System.out.println("Number of unique words " + stats.getNumUniqueWords());
+        System.out.println("Number of character " + stats.getTotalCharacters());
+        System.out.println("Average word length " + stats.getAvgCharacterPerWord());
+
+        System.out.println("Number of words with frequency 1: " + stats.getNumWordsWithGivenFrequency(1));
+        System.out.println("Number of words with frequency 2: " + stats.getNumWordsWithGivenFrequency(2));
+        System.out.println("Number of words with frequency 3: " + stats.getNumWordsWithGivenFrequency(3));
     }
 }
